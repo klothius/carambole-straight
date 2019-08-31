@@ -1,4 +1,4 @@
-This is a simple OpenGL freeGlut3 game of carambole  - straight line type
+This is a simple OpenGL freeGlut3 game of carambole  - straight rail type
 
 To install freeglut, use `sudo apt-get freeglut3-dev`.
 To compile, use the `make` command from the root directory.
