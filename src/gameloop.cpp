@@ -1,9 +1,66 @@
 #include "gameLoopConstants.h"
 #include "gameloop.h"
+#include "gamestate.h"
 
 #include <cstring>
 
 GameloopState gameloopState;
+
+void writeGameInfo() {
+  // light will keep us away from coloring stuff
+  glDisable(GL_LIGHTING);
+  //draw table
+  glLoadIdentity();
+  glColor3f( 0.1f, 0.1f, 0.1f);
+  glRectf(0.3f, 1.0f, 1.0f, 0.8f);
+
+  const static char scores[8] = "Scores:";
+  static char player1score[20];
+  static char player2score[20];
+  sprintf(player1score, "Player 1: %dpts", GameState::p1Score);
+  sprintf(player2score,  "Player 2: %dpts", GameState::p2Score);
+
+  glLoadIdentity();
+  glColor3f(0.7f, 0.7f, 0.7f );
+  // first print scores line
+  glRasterPos2f(0.35, 0.95 );
+  for( int i = 0; i < 7; i++ ) {
+    glutBitmapCharacter( GLUT_BITMAP_TIMES_ROMAN_24, scores[i] );
+  }
+  // next print P1 score
+  glRasterPos2f(0.35, 0.9 );
+  for( int i = 0; i < 15; i++ ) {
+    glutBitmapCharacter( GLUT_BITMAP_TIMES_ROMAN_24, player1score[i] );
+  }
+  // next print P2 score
+  glRasterPos2f(0.35, 0.85 );
+  for( int i = 0; i < 15; i++ ) {
+    glutBitmapCharacter( GLUT_BITMAP_TIMES_ROMAN_24, player2score[i] );
+  }
+
+  // print current player
+  glRasterPos2f(0.7, 0.95 );
+  static const char activePlayer[22] = "Active player ";
+  for( int i = 0; i < 21; i++ ) {
+    glutBitmapCharacter( GLUT_BITMAP_TIMES_ROMAN_24, activePlayer[i] );
+  }
+  glRasterPos2f(0.8, 0.89);
+  glutBitmapCharacter( GLUT_BITMAP_TIMES_ROMAN_24, GameState::playerActive + '0');
+ 
+  // and player ball color
+
+  color_t playerColor = 
+    GameState::playerActive == 1
+      ? firstPlayerBallColor
+      : secondPlayerBallColor;
+  glColor3f(playerColor.R, playerColor.G, playerColor.B);
+  glTranslatef(0.88, 0.905, 0);
+  glutSolidSphere(0.02, 50, 30);
+  int numSegments = 100;
+  glEnd();
+
+  glEnable(GL_LIGHTING);
+}
 
 void calculateDirections (int oldx, int oldy, int x, int y) {
   gameloopState.dx = double(x) - oldx;
@@ -12,6 +69,10 @@ void calculateDirections (int oldx, int oldy, int x, int y) {
 /* This function receives mouse actions, which we'll use to handle our dragging of the balls
 */
 void ODLGameLoop_onMouse(int button, int state, int mousex, int mousey) {
+  if (GameState::didPlayerStart == true) {
+    // if the player already started play, it shouldn't be able to do it again until all balls are still
+    return;
+  }
   if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
     gameloopState.startedDragging = 1;
     gameloopState.mousePrevX = double(mousex);
@@ -21,44 +82,6 @@ void ODLGameLoop_onMouse(int button, int state, int mousex, int mousey) {
     calculateDirections(gameloopState.mousePrevX, gameloopState.mousePrevY, mousex, mousey);
     gameloopState.startedDragging = 2;
   }
-}
-void writeGameInfo() {
-  // light will keep us away from coloring stuff
-  glDisable(GL_LIGHTING);
-  //draw table
-  glLoadIdentity();
-  glColor3f( 0.1f, 0.1f, 0.1f);
-  glRectf(0.4f, 1.0f, 1.0f, 0.8f);
-
-  char *scores = "Scores:";
-  char player1score[18];
-  char player2score[18];
-  sprintf(player1score, "Player 1: %dpts", 12);
-  sprintf(player2score,  "Player 2: %dpts", 22);
-
-  glLoadIdentity();
-  glColor3f( 0.5f, 0.5f, 0.5f );
-  // first print scores line
-  glRasterPos2f( 0.5, 0.95 );
-  for( int i = 0; i < 7; i++ ) {
-    glutBitmapCharacter( GLUT_BITMAP_TIMES_ROMAN_24, scores[i] );
-  }
-  // next print P1 score
-  glRasterPos2f( 0.5, 0.9 );
-  for( int i = 0; i < 17; i++ ) {
-    glutBitmapCharacter( GLUT_BITMAP_TIMES_ROMAN_24, player1score[i] );
-  }
-  // next print P2 score
-  glRasterPos2f( 0.5, 0.85 );
-  for( int i = 0; i < 17; i++ ) {
-    glutBitmapCharacter( GLUT_BITMAP_TIMES_ROMAN_24, player2score[i] );
-  }
-  glEnable(GL_LIGHTING);
-}
-void ODLGameLoop_onMouseMove(int x, int y) {
-  printf("%d %d\n", x, y);
-  // gameloopState.moveBy.x = x - gameloopState.mousePrevX;
-  // gameloopState.moveBy.y = gameloopState.mousePrevY - y;
 }
 
 /* This function handles refreshing the display window
@@ -168,7 +191,6 @@ void ODLGameLoop_initOpenGL() {
     glutDisplayFunc(ODLGameLoop_onOpenGLDisplay); //set function that displays things
     glutIdleFunc(ODLGameLoop_onOpenGLIdle); //set function to update state
     glutMouseFunc(ODLGameLoop_onMouse);
-    glutMotionFunc(ODLGameLoop_onMouseMove);
 
     glutMainLoop();
 

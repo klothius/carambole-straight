@@ -318,6 +318,13 @@ void Physics::fixedUpdate( float dt, double customDx = 0, double customDy = 0 ) 
   if (newDy > -0.00005 && newDy < 0.00005) {
     newDy = 0;
   }
+   Physics* ball = (Physics*) parent->getPart("Physics").front();
+  if (newDx == 0 && newDy == 0) {
+    // this ball stopped, notify game state
+    GameState::ballStopped(ball->player);
+  } else {
+    GameState::ballRolling(ball->player);
+  }
   
   dx = newDx;
   dy = newDy;

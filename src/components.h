@@ -29,6 +29,10 @@ const color_t secondPlayerBallColor {
   0.42
 };
 
+const int playBallIndex = 0;
+const int firstPlayerIndex = 1;
+const int secondPlayerIndex = 2;
+
 #include <list>
 #include <string>
 

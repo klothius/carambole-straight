@@ -1,3 +1,4 @@
+#include "gamestate.cpp"
 #include "components.h"
 #include "components.cpp"
 #include "gameloop.cpp"
@@ -11,6 +12,8 @@ void Bounce(Collider* c1, Collider* c2, float dt){
   // Access the physics components of both balls
   Physics* p1 = (Physics*) c1->parent->getPart("Physics").front();
   Physics* p2 = (Physics*) c2->parent->getPart("Physics").front();
+
+  GameState::hitBalls(p1->player, p2->player);
 
   // Calculate new velocities using One-dimensional relativistic formula
   float newv1x = (p1->dx * (p1->mass - p2->mass) +
