@@ -13,6 +13,8 @@ Implements all of the components used program.
 #include <GL/gl.h>     // The GL Header File
 #include <GL/glut.h>   // The GL Utility Toolkit (Glut) Header
 #include <unistd.h>
+#include "gamestate.h"
+
 
 #define PI 3.14159265f
 
@@ -24,10 +26,10 @@ using namespace std;
  *
  * @param (double x) starting x position of object
  * @param (double y) starting y position of object
- * @param (bool main) flag telling if the ball is the main one
+ * @param (int player) flag telling if the ball is the int player one
  * 
  */
-Ball::Ball( double x, double y, bool main ) : x( x ), y( y ) {}
+Ball::Ball( double x, double y, int player ) : x( x ), y( y ) {}
 
 /* This function returns a list of all components that have the input string as their type
  *
@@ -58,10 +60,10 @@ void Ball::addBaseClass( BaseClass* c) {
  *  
  * @param (Ball* parent) the parent of the new BaseClass
  * @param (string type) the type of the new component
- * @param (bool main) flag telling if this is the main ball
+ * @param (int player) flag telling which player does this ball belong to
  */
 
-BaseClass::BaseClass( Ball* parent, string type, bool main ) : parent ( parent ), type ( type ), main ( main ) {
+BaseClass::BaseClass( Ball* parent, string type, int player ) : parent ( parent ), type ( type ), player ( player ) {
   BaseClass::components.push_back( this ); 
   parent->addBaseClass( this );
 };
@@ -112,11 +114,11 @@ void BaseClass::fixedUpdate( float dt, double dx, double dy ) {}
 void BaseClass::updateAll( float dt, int x, int y ){
   //printf("floatingUpdateDt:%f \n", (float) dt);
   for(BaseClass* elem: BaseClass::components){
-    if (elem->main == false) {
-      elem->update(dt, -1, -1);
+    if (elem->player == GameState::playerActive) {
+      elem->update( dt, x, y );
       continue;
     }
-    elem->update( dt, x, y );
+    elem->update(dt, -1, -1);
   }
 };
 
@@ -129,11 +131,11 @@ void BaseClass::updateAll( float dt, int x, int y ){
 void BaseClass::fixedUpdateAll( float dt, double dx = 0, double dy = 0 ){
   //printf("fixedUpdateDt:%f \n", (float) dt);
   for(BaseClass* elem: BaseClass::components){
-    if (elem->main == false) {
-      elem->fixedUpdate(dt, 0, 0);
+    if (elem->player == GameState::playerActive) {
+      elem->fixedUpdate( dt, dx, dy );
       continue;
     }
-    elem->fixedUpdate( dt, dx, dy );
+    elem->fixedUpdate(dt, 0, 0);
   }
 };
 
@@ -148,10 +150,10 @@ list<Collider*> Collider::allColliders;
  *
  * @param (Ball* parent) the parent of the new BaseClass
  * @param (double radius) the collision radius of the object
- * @param (bool main) flag telling if the component is part of the main ball
+ * @param (int player) flag telling which player does this ball belong to
  */
-Collider::Collider( Ball* parent, double radius, bool main ) :
-  radius( radius ), BaseClass ( parent, "Collider", main){
+Collider::Collider( Ball* parent, double radius, int player ) :
+  radius( radius ), BaseClass ( parent, "Collider", player){
   Collider::allColliders.push_back( this );
   list<triggerFunc> triggers; //this list is all colliders
 };
@@ -214,10 +216,10 @@ void Collider::fixedUpdate(float dt, double dx, double dy) {
  *
  * @param (Ball* parent) the parent of the new BaseClass
  * @param (double radius) the collision radius of the object
- * @param (bool main) - flag that tells if the component is part of the main ball
+ * @param (int player) flag telling which player does this ball belong to
  */
-CircleRender::CircleRender( Ball* parent, double radius, bool main ) :
-radius ( radius ), BaseClass(parent, string("CircleRender"), main) {
+CircleRender::CircleRender( Ball* parent, double radius, int player ) :
+radius ( radius ), BaseClass(parent, string("CircleRender"), player) {
   setColor(0, 0, 1); // all balls are default blue
 }
 
@@ -275,10 +277,10 @@ void CircleRender::update( float dt, int x, int y ) {
  * @param (double dx) the speed in the x direction
  * @param (double dy) the speed in the y direction
  * @param (double mass) the mass of the object
- * @param (bool main) - flag telling if the component is part of the main ball
+ * @param (int player) flag telling which player does this ball belong to
  */
-Physics::Physics ( Ball* parent, double dx, double dy, double mass, bool main) :
-mass ( mass ), dx ( dx ), dy ( dy ), BaseClass (parent, string("Physics"), main) {};
+Physics::Physics ( Ball* parent, double dx, double dy, double mass, int player) :
+mass ( mass ), dx ( dx ), dy ( dy ), BaseClass (parent, string("Physics"), player) {};
 
 /**
  * This function changes the state of the object at a fixed rate
@@ -336,10 +338,10 @@ void Physics::fixedUpdate( float dt, double customDx = 0, double customDy = 0 ) 
  *
  * @param (Ball* parent) the parent of the new BaseClass
  * @param (double radius) the radius of the ball
- * @param (bool main) - flag telling if the component is part of the main ball
+ * @param (int player) flag telling which player does this ball belong to
  */
-WallBounceScript::WallBounceScript( Ball* parent, double radius, bool main ) :
-radius ( radius ), BaseClass (parent, string( "WallBounceScript" ), main) {};
+WallBounceScript::WallBounceScript( Ball* parent, double radius, int player ) :
+radius ( radius ), BaseClass (parent, string( "WallBounceScript" ), player) {};
 
 /* This function takes in a float (dt) representing the time since the last fixedUpdate
  * This function updates the x and y speeds in the Physics component of the Ball to make objects bounce off walls.

@@ -66,27 +66,38 @@ void Bounce(Collider* c1, Collider* c2, float dt){
 */
 Ball* makeBall(double x, double y, double dx, double dy, double radius) {
   float mass = PI * pow(radius, 2);
-  bool main = BaseClass::numberOfBalls() == 0;
-  Ball* obj = new Ball(x, y, main);
-  CircleRender* circleRender = new CircleRender(obj, radius, main);
-  if (main == true) {
-    circleRender->setColor(1, 1, 1);
+  int player = BaseClass::numberOfBalls();
+  Ball* obj = new Ball(x, y, player);
+  CircleRender* circleRender = new CircleRender(obj, radius, player);
+  switch(player) {
+    case 0:
+      circleRender->setColor(playBallColor.R, playBallColor.G, playBallColor.B);
+      break;
+    case 1:
+      circleRender->setColor(firstPlayerBallColor.R, firstPlayerBallColor.G, firstPlayerBallColor.B);
+      break;
+    case 2:
+      circleRender->setColor(secondPlayerBallColor.R, secondPlayerBallColor.G, secondPlayerBallColor.B);
+      break;
   }
-  Collider* collider = new Collider(obj, radius, main);
-  Physics* physics = new Physics(obj, dx, dy, mass, main);
-  WallBounceScript* wallBounceScript = new WallBounceScript(obj, radius, main);
+  Collider* collider = new Collider(obj, radius, player);
+  Physics* physics = new Physics(obj, dx, dy, mass, player);
+  WallBounceScript* wallBounceScript = new WallBounceScript(obj, radius, player);
   collider->addTrigger(Bounce);
   return obj;
 }
 /* Creates all balls needed to play 
 */
 void makeAllBalls() {
-  // main / play ball
-  makeBall(mainBallPositionX, mainBallPositionY, 0, 0, 0.1);
-  // two secondary balls
-  makeBall(secondBallPositionX, secondBallPositionY, 0, 0, 0.1);
-  makeBall(thirdBallPositionX, thirdBallPositionY, 0, 0, 0.1);
+  // play ball
+  makeBall(playBallPositionX, playBallPositionY, 0, 0, 0.1);
 
+  // first player ball
+  makeBall(firstPlayerBallPositionX, firstPlayerBallPositionY, 0, 0, 0.1);
+
+  // second player ball
+  makeBall(secondPlayerBallPositionX, secondPlayerBallPositionY, 0, 0, 0.1);
+  
   //moar balls
   // for(int i = 0; i < 3; i++) {
   //   double posX = (float)rand() / RAND_MAX;

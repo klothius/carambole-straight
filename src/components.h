@@ -1,12 +1,33 @@
 #ifndef COMPONENTS_H
 #define COMPONENTS_H
 
-const double mainBallPositionX = 0.8;
-const double mainBallPositionY = 0;
-const double secondBallPositionX = 0;
-const double secondBallPositionY = -0.3;
-const double thirdBallPositionX = 0;
-const double thirdBallPositionY = 0.3;
+struct color_t {
+  float R;
+  float G;
+  float B;
+};
+
+const double playBallPositionX = 0.8;
+const double playBallPositionY = 0;
+const color_t playBallColor {
+  1,
+  0,
+  0
+};
+const double firstPlayerBallPositionX = 0;
+const double firstPlayerBallPositionY = -0.3;
+const color_t firstPlayerBallColor {
+  1,
+  1,
+  1
+};
+const double secondPlayerBallPositionX = 0;
+const double secondPlayerBallPositionY = 0.3;
+const color_t secondPlayerBallColor {
+  0.91,
+  0.84,
+  0.42
+};
 
 #include <list>
 #include <string>
@@ -21,7 +42,7 @@ class Ball {
   	void addBaseClass( BaseClass* c );
 
   public:
-  	Ball( double x, double y, bool main );
+  	Ball( double x, double y, int player );
   	list<BaseClass*> getPart( string type );	// Returns a list of all components matching the type parameter
   	double x;
   	double y;
@@ -32,23 +53,15 @@ class BaseClass {
   	static list<BaseClass*> components;
 
   public:
-  	BaseClass( Ball* parent, string type, bool main ); // Similar as an init method: In this case, initilizes the type and parent fields, and adds self to the static components list.
+  	BaseClass( Ball* parent, string type, int player ); // Similar as an init method: In this case, initilizes the type and parent fields, and adds self to the static components list.
   	static int numberOfBalls();
     static void updateAll( float dt, int x, int y );  // Run all variable updates (eg renderAll)
-    static void updateMain(float dt, int x, int y);
-    static void fixedUpdateMain(float dt, double x, double y);
   	static void fixedUpdateAll( float dt, double dx, double dy ); // Updates on fixed interval (eg physicsUpdateAll)
   	virtual void update( float dt, int x, int y);
   	virtual void fixedUpdate( float dt, double dx, double dy );
   	const string type;
-    const bool main;
+    const int player;
   	Ball* const parent; // Declare the pointer constant without making the data constant
-};
-
-struct color_t {
-  float R;
-  float G;
-  float B;
 };
 
 class CircleRender : public BaseClass {
@@ -57,7 +70,7 @@ class CircleRender : public BaseClass {
     double calculatePos(double pos);
 
   public:
-    CircleRender( Ball* parent, double radius, bool main);
+    CircleRender( Ball* parent, double radius, int player);
     void setColor(float R, float G, float B);
     double radius;
     void update( float dt, int x, int y );
@@ -65,7 +78,7 @@ class CircleRender : public BaseClass {
 
 class Physics : public BaseClass {
   public:
-    Physics ( Ball* parent, double dx = 0, double dy = 0, double mass = 1, bool main = 0 );
+    Physics ( Ball* parent, double dx = 0, double dy = 0, double mass = 1, int player = 0 );
     void fixedUpdate( float dt, double dx, double dy );
     double dx;
     double dy;
@@ -74,7 +87,7 @@ class Physics : public BaseClass {
 
 class WallBounceScript : public BaseClass {
   public:
-    WallBounceScript( Ball* parent, double radius, bool main );
+    WallBounceScript( Ball* parent, double radius, int player );
     void fixedUpdate( float dt, double dx, double dy );
     double radius;
 };
@@ -90,7 +103,7 @@ class Collider; //Forward declaration, alerts the compiler that collider is comi
 
     public:
       void addTrigger(triggerFunc trigger);  //add trigger
-      Collider( Ball* parent, double radius, bool main); //Collider init
+      Collider( Ball* parent, double radius, int player); //Collider init
       void fixedUpdate ( float dt, double dx, double dy ); //Update for a collider
   };
 

@@ -1,6 +1,7 @@
 #include "gameLoopConstants.h"
 #include "gameloop.h"
 
+#include <cstring>
 
 GameloopState gameloopState;
 
@@ -21,6 +22,39 @@ void ODLGameLoop_onMouse(int button, int state, int mousex, int mousey) {
     gameloopState.startedDragging = 2;
   }
 }
+void writeGameInfo() {
+  // light will keep us away from coloring stuff
+  glDisable(GL_LIGHTING);
+  //draw table
+  glLoadIdentity();
+  glColor3f( 0.1f, 0.1f, 0.1f);
+  glRectf(0.4f, 1.0f, 1.0f, 0.8f);
+
+  char *scores = "Scores:";
+  char player1score[18];
+  char player2score[18];
+  sprintf(player1score, "Player 1: %dpts", 12);
+  sprintf(player2score,  "Player 2: %dpts", 22);
+
+  glLoadIdentity();
+  glColor3f( 0.5f, 0.5f, 0.5f );
+  // first print scores line
+  glRasterPos2f( 0.5, 0.95 );
+  for( int i = 0; i < 7; i++ ) {
+    glutBitmapCharacter( GLUT_BITMAP_TIMES_ROMAN_24, scores[i] );
+  }
+  // next print P1 score
+  glRasterPos2f( 0.5, 0.9 );
+  for( int i = 0; i < 17; i++ ) {
+    glutBitmapCharacter( GLUT_BITMAP_TIMES_ROMAN_24, player1score[i] );
+  }
+  // next print P2 score
+  glRasterPos2f( 0.5, 0.85 );
+  for( int i = 0; i < 17; i++ ) {
+    glutBitmapCharacter( GLUT_BITMAP_TIMES_ROMAN_24, player2score[i] );
+  }
+  glEnable(GL_LIGHTING);
+}
 void ODLGameLoop_onMouseMove(int x, int y) {
   printf("%d %d\n", x, y);
   // gameloopState.moveBy.x = x - gameloopState.mousePrevX;
@@ -38,6 +72,7 @@ void ODLGameLoop_onOpenGLDisplay() {
   int mousePrevX = gameloopState.startedDragging == 1 ? (int)gameloopState.moveBy.x : -1;
   int mousePrevY = gameloopState.startedDragging == 1 ? (int)gameloopState.moveBy.y : -1;
   BaseClass::updateAll(dt, mousePrevX, mousePrevY);
+  writeGameInfo();
   glutSwapBuffers();
 }
 
@@ -63,12 +98,11 @@ void ODLGameLoop_onOpenGLIdle() {
       }
       //ODLGameLoop_updateState();
       gameloopState.timeAccumulatedMs -= DESIRED_STATE_UPDATE_DURATION_MS;
-
       glutPostRedisplay();
-
   }
 
   gameloopState.lastLoopTime = now;
+  writeGameInfo();
 }
 
 
@@ -137,4 +171,5 @@ void ODLGameLoop_initOpenGL() {
     glutMotionFunc(ODLGameLoop_onMouseMove);
 
     glutMainLoop();
+
 }
