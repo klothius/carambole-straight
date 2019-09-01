@@ -294,10 +294,43 @@ void Physics::fixedUpdate( float dt, double customDx = 0, double customDy = 0 ) 
   //if we have values set, let's use them
   double newDx = customDx != 0 ? customDx /100000 : dx;
   double newDy = customDy != 0 ? customDy /100000 : dy;
+  
   if (customDx == 0) {
     // if we don't have values, let's slow down the balls slowly
-    newDx = newDx > 0 ? newDx - 0.000003 : newDx + 0.000003;
-    newDy = newDy > 0 ? newDy - 0.000003 : newDy + 0.000003;
+    double slowDown = 0.000002;
+    bool newDxPositive = newDx > 0;
+    bool newDyPositive = newDy > 0;
+    double steps = 0;
+    double slowDownX = 0;
+    double slowDownY = 0;
+    // let's calculate how many steps should we take before slowing down the ball on each dimension to stop
+    // using the default slowdown speed
+    // then use the highest number of steps as the value for the other dimension as well
+    // to calculate by how much should we slow down the ball with each step
+    if (abs(newDx / slowDown) > abs(newDy / slowDown)) {
+      steps = abs(newDx / slowDown);
+      if (steps != 0) {
+        slowDownX = slowDown;
+        slowDownY = abs(newDy / steps);
+      }
+    } else {
+      steps = abs(newDy / slowDown);
+      if (steps != 0) {
+        slowDownY = slowDown;
+        slowDownX = abs(newDx / steps);
+      }
+    }
+    double reducedDx = newDxPositive ? newDx - slowDownX : newDx + slowDownX;
+    double reducedDy = newDyPositive ? newDy - slowDownY : newDy + slowDownY;
+    bool shouldLowerDx = !(newDxPositive == true && reducedDx < 0) && !(newDxPositive == false && reducedDx > 0);
+    bool shouldLowerDy = !(newDyPositive == true && reducedDy < 0) && !(newDyPositive == false && reducedDy > 0);
+    newDx = shouldLowerDx ? reducedDx : newDx;
+    newDy = shouldLowerDy ? reducedDy : newDy;
+    
+    if (shouldLowerDx == false && shouldLowerDy == false) {
+      newDx = 0;
+      newDy = 0;
+    }
   }
   // limit max speed of the balls
   if (newDx > 0.0012) {
@@ -311,13 +344,7 @@ void Physics::fixedUpdate( float dt, double customDx = 0, double customDy = 0 ) 
     newDy = -0.0012;
   }
 
-  //at some point, the movement is too small, so we just null it
-  if (newDx > -0.00005 && newDx < 0.00005) {
-    newDx = 0;
-  }
-  if (newDy > -0.00005 && newDy < 0.00005) {
-    newDy = 0;
-  }
+
    Physics* ball = (Physics*) parent->getPart("Physics").front();
   if (newDx == 0 && newDy == 0) {
     // this ball stopped, notify game state

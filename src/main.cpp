@@ -44,7 +44,7 @@ void Bounce(Collider* c1, Collider* c2, float dt){
     p2->parent->x += newv2x * dt;
     p2->parent->y += newv2y * dt;
 
-    //these are round objects, so they will not stop if an object is not moving.
+    //these are round objects on very slippery cloth, so they will not stop if an object is not moving.
     if (oldDx1 == 0) {
       p2->dx = (oldDx2 < 0 ? 1 : -1) * (oldDx2 / 4);
     }
