@@ -28,12 +28,12 @@ void writeGameInfo() {
     glutBitmapCharacter( GLUT_BITMAP_TIMES_ROMAN_24, scores[i] );
   }
   // next print P1 score
-  glRasterPos2f(0.35, 0.9 );
+  glRasterPos2f(0.35, 0.89 );
   for( int i = 0; i < 15; i++ ) {
     glutBitmapCharacter( GLUT_BITMAP_TIMES_ROMAN_24, player1score[i] );
   }
   // next print P2 score
-  glRasterPos2f(0.35, 0.85 );
+  glRasterPos2f(0.35, 0.83 );
   for( int i = 0; i < 15; i++ ) {
     glutBitmapCharacter( GLUT_BITMAP_TIMES_ROMAN_24, player2score[i] );
   }
@@ -146,6 +146,7 @@ void ODLGameLoop_initOpenGL() {
     glutInitWindowPosition(windowPosX, windowPosY);
     glutCreateWindow(title);
 
+
     glShadeModel(GL_SMOOTH);              // Enable Smooth Shading
     glClearColor(0.02f, 0.26f, 0.16f, 1.0f);       // Black Background
     // glClearColor(0.0, 0.0, 0.0, 1.0);
@@ -178,15 +179,8 @@ void ODLGameLoop_initOpenGL() {
     
     // Set the light position
     glLightfv(GL_LIGHT0, GL_POSITION, qaLightPosition);
-
-     // Set material properties
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, qaGreen);
-
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, qaGreen);
-
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, qaWhite);
-
-    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 10);
+    
+    // gluPerspective(60 * (float)VIEW_WIDTH/VIEW_HEIGHT, (float)VIEW_WIDTH/VIEW_HEIGHT, 0.01f, 100.0f);
 
     glutDisplayFunc(ODLGameLoop_onOpenGLDisplay); //set function that displays things
     glutIdleFunc(ODLGameLoop_onOpenGLIdle); //set function to update state
