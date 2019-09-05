@@ -333,15 +333,15 @@ void Physics::fixedUpdate( float dt, double customDx = 0, double customDy = 0 ) 
     }
   }
   // limit max speed of the balls
-  if (newDx > 0.0012) {
-    newDx = 0.0012;
-  } else if (newDx < -0.0012) {
-    newDx = -0.0012;
+  if (newDx > 0.0015) {
+    newDx = 0.0015;
+  } else if (newDx < -0.0015) {
+    newDx = -0.0015;
   }
-  if (newDy > 0.0012) {
-    newDy = 0.0012;
-  } else if (newDy < -0.0012) {
-    newDy = -0.0012;
+  if (newDy > 0.0015) {
+    newDy = 0.0015;
+  } else if (newDy < -0.0015) {
+    newDy = -0.0015;
   }
 
 
