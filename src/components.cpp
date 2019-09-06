@@ -260,11 +260,6 @@ void CircleRender::update( float dt, int x, int y ) {
   // Use triangular segments to form a circle
      glColor3f(color.R, color.G, color.B);
      glutSolidSphere(ballRadius, 50, 30);
-     int numSegments = 100;
-     GLfloat angle;
-     for (int i = 0; i <= numSegments; i++) { // Last vertex same as first vertex
-        angle = (i * 2.0f * PI) / numSegments;  // 360 deg for all segments
-     }
   glEnd();
 }
 /*End CircleRenderer-------------------------------------------------------*/
