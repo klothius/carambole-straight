@@ -84,9 +84,9 @@ Ball* makeBall(double x, double y, double dx, double dy, double radius) {
       break;
   }
   Collider* collider = new Collider(obj, radius, player);
+  collider->addTrigger(Bounce);
   Physics* physics = new Physics(obj, dx, dy, mass, player);
   WallBounceScript* wallBounceScript = new WallBounceScript(obj, radius, player);
-  collider->addTrigger(Bounce);
   return obj;
 }
 /* Creates all balls needed to play 

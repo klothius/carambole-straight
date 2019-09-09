@@ -1,8 +1,11 @@
+#include <GL/gl.h>     // The GL Header File
+#include <GL/glut.h>   // The GL Utility Toolkit (Glut) Header
+#include <stdio.h>
+#include <cstring>
 #include "gameLoopConstants.h"
 #include "gameloop.h"
 #include "gamestate.h"
-
-#include <cstring>
+#include "components.h"
 
 GameloopState gameloopState;
 
@@ -56,7 +59,6 @@ void writeGameInfo() {
   glColor3f(playerColor.R, playerColor.G, playerColor.B);
   glTranslatef(0.88, 0.905, 0);
   glutSolidSphere(0.02, 50, 30);
-  int numSegments = 100;
   glEnd();
 
   glEnable(GL_LIGHTING);
@@ -125,7 +127,6 @@ void ODLGameLoop_onOpenGLIdle() {
   }
 
   gameloopState.lastLoopTime = now;
-  writeGameInfo();
 }
 
 
@@ -164,7 +165,7 @@ void ODLGameLoop_initOpenGL() {
     GLfloat qaRed[] = {1.0, 0.0, 0.0, 1.0}; //Red Color
 
         // Set lighting intensity and color
-    GLfloat qaAmbientLight[]    = {0, 0, 0, 1.0};
+    // GLfloat qaAmbientLight[]    = {0, 0, 0, 1.0};
     GLfloat qaDiffuseLight[]    = {1.0, 1.0, 1.0, 1.0};
     GLfloat qaSpecularLight[]    = {1.0, 1.0, 1.0, 1.0};
         // Light source position
@@ -173,7 +174,7 @@ void ODLGameLoop_initOpenGL() {
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     // Set lighting intensity and color
-    glLightfv(GL_LIGHT0, GL_AMBIENT, qaAmbientLight);
+    // glLightfv(GL_LIGHT0, GL_AMBIENT, qaAmbientLight);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, qaDiffuseLight);
     glLightfv(GL_LIGHT0, GL_SPECULAR, qaSpecularLight);
     
@@ -187,5 +188,4 @@ void ODLGameLoop_initOpenGL() {
     glutMouseFunc(ODLGameLoop_onMouse);
 
     glutMainLoop();
-
 }

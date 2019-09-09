@@ -199,7 +199,9 @@ void Collider::fixedUpdate(float dt, double dx, double dy) {
 
       // If there is no collision, skip this loop iteration
       float distance = calculateDistance(otherCollider->parent, parent);
-      if (distance > this->radius + otherCollider->radius) continue;
+      if (distance > this->radius + otherCollider->radius) {
+        continue;
+      }
 
       // Otherwise, execute any registered collision resolution functions
       for (triggerFunc trigger: triggers) trigger(this, otherCollider, dt);
